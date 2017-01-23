@@ -8,6 +8,7 @@ requirejs.config({
     paths: {
         activity: "../js",
         easel: "../lib/easeljs",
+        soundjs:"../lib/soundjs",
         handlebars: "../lib/handlebars",
     }
 });

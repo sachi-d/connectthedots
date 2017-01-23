@@ -2,7 +2,8 @@ define(function (require) {
     var activity = require("sugar-web/activity/activity");
     var icon = require("sugar-web/graphics/icon");
     require("easel");
-    require("handlebars")
+    require("handlebars");
+    require("soundjs");
     var shapes = require("activity/shapes")
         // Manipulate the DOM only when it is ready.
     require(['domReady!'], function (doc) {
@@ -52,6 +53,18 @@ define(function (require) {
         var Dot = "images/dot.svg";
         var Pen = "images/pen.svg";
         var shape = -1;
+        var lastHitDot=0;
+        //Sounds
+        var sounds = [
+          {
+              src: "jump.mp3"
+              , id: "pop"
+          },{
+              src: "tink.mp3"
+              , id: "tink"
+          }
+       ];
+        createjs.Sound.registerSounds(sounds, "sounds/");
         // Get things started
         init();
 
@@ -139,11 +152,12 @@ define(function (require) {
                 bitmap.scaleX = bitmap.scaleY = bitmap.scale = 1.5
             }
             bitmap.name = "bmp_" + i;
+            bitmap.number=i;
             bitmap.cursor = "pointer";
             // Eventually, we can check this to make sure the number
             // has been touched.
             bitmap.hitArea = hitArea;
-            (function (target) {})(bitmap);
+            (function (target) { })(bitmap);
             document.getElementById("loader").className = "";
             createjs.Ticker.addEventListener("tick", tick);
         }
@@ -196,6 +210,19 @@ define(function (require) {
                         oldPt.y = stage.mouseY;
                         oldMidPt.x = midPt.x;
                         oldMidPt.y = midPt.y;
+                        var targetDot=bitmaps[lastHitDot+1];
+                        var pt = target.localToLocal(20,20,targetDot);
+                        //tests the point (20, 20) of the pen against the target dot
+                        if(targetDot.hitTest(pt.x,pt.y)){
+                            if(targetDot.number==lastHitDot+1){ 
+                                lastHitDot++;
+                                if(lastHitDot+1!=shapes[shape-1].length){
+                                    createjs.Sound.play("pop"); 
+                                }else{
+                                    createjs.Sound.play("tink"); 
+                                } 
+                            }
+                        }
                     }
                 }
                 bitmap.onMouseOver = function () {
@@ -262,6 +289,7 @@ define(function (require) {
             drawingCanvas.graphics.clear();
             update = true;
             shape = shape + 1;
+            lastHitDot=0;
         }
     });
 });
