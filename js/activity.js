@@ -2,8 +2,7 @@ define(function (require) {
     var activity = require("sugar-web/activity/activity");
     var icon = require("sugar-web/graphics/icon");
     require("easel");
-    require("handlebars");
-    require("soundjs");
+    require("handlebars"); 
     var shapes = require("activity/shapes")
         // Manipulate the DOM only when it is ready.
     require(['domReady!'], function (doc) {
@@ -55,16 +54,9 @@ define(function (require) {
         var shape = -1;
         var lastHitDot=0;
         //Sounds
-        var sounds = [
-          {
-              src: "jump.mp3"
-              , id: "pop"
-          },{
-              src: "tink.mp3"
-              , id: "tink"
-          }
-       ];
-        createjs.Sound.registerSounds(sounds, "sounds/");
+        var popSound=new Audio("sounds/jump.mp3");
+        var tinkSound=new Audio("sounds/tink.mp3");
+
         // Get things started
         init();
 
@@ -211,15 +203,15 @@ define(function (require) {
                         oldMidPt.x = midPt.x;
                         oldMidPt.y = midPt.y;
                         var targetDot=bitmaps[lastHitDot+1];
-                        var pt = target.localToLocal(20,20,targetDot);
+                        var pt = pen_bitmap.localToLocal(20,20,targetDot); 
                         //tests the point (20, 20) of the pen against the target dot
                         if(targetDot.hitTest(pt.x,pt.y)){
                             if(targetDot.number==lastHitDot+1){ 
                                 lastHitDot++;
                                 if(lastHitDot+1!=shapes[shape-1].length){
-                                    createjs.Sound.play("pop"); 
+                                    popSound.play();
                                 }else{
-                                    createjs.Sound.play("tink"); 
+                                    tinkSound.play();
                                 } 
                             }
                         }
@@ -242,7 +234,7 @@ define(function (require) {
             createjs.Ticker.addEventListener("tick", tick);
         }
 
-        function tick(event) {
+        function tick(event) { 
             // This set makes it so the stage only re-renders when
             // an event handler indicates a change has happened.
             if (update) {
